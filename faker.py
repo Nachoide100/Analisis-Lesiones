@@ -82,18 +82,18 @@ for jugador in jugadores:
             continue
             
         # Calcular probabilidad de lesión hoy
-        prob_lesion = 0.005 # Probabilidad base muy baja (0.5%)
+        prob_lesion = 0.01 # Probabilidad base muy baja (0.5%)
         
         # Factor 1: Privación de sueño
         if df_jug.iat[i, df_jug.columns.get_loc('Sueño_Medio_3D')] < 6.5:
-            prob_lesion += 0.03 # Sube un 3%
+            prob_lesion += 0.25 # Sube un 3%
             
         # Factor 2: Pico de carga (Carga de hoy vs media de los últimos 7 días)
         carga_hoy = df_jug.iat[i, df_jug.columns.get_loc('Carga_Diaria')]
         carga_media = df_jug.iat[i, df_jug.columns.get_loc('Carga_Media_7D')]
         
         if carga_media > 0 and (carga_hoy / carga_media) > 1.5:
-            prob_lesion += 0.05 # Sube un 5% si la carga de hoy es un 50% mayor a la media aguda
+            prob_lesion += 0.35 # Sube un 5% si la carga de hoy es un 50% mayor a la media aguda
             
         # Lanzar los dados
         if np.random.random() < prob_lesion:
