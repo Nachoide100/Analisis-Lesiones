@@ -27,4 +27,4 @@ print(f"Subiendo datos a la tabla '{nombre_tabla}' en PostgreSQL...")
 # Creación de la tabla
 df.to_sql(nombre_tabla, engine, if_exists='replace', index=False)
 
-print("¡Ingesta completada con éxito! Tienes los datos listos para el Feature Engineering.")
+print("¡Ingesta completada con éxito!.")
