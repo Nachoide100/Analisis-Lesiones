@@ -1,5 +1,5 @@
 import pandas as pd
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 
 # 1. Configurar las credenciales de PostgreSQL
 USUARIO = 'postgres'          
@@ -24,7 +24,16 @@ df['Fecha'] = pd.to_datetime(df['Fecha'])
 nombre_tabla = 'registro_diario'
 print(f"Subiendo datos a la tabla '{nombre_tabla}' en PostgreSQL...")
 
-# Creación de la tabla
-df.to_sql(nombre_tabla, engine, if_exists='replace', index=False)
+# PASO 1: Vaciamos la tabla antigua (sin romper las vistas)
+# Usamos una conexión directa para ejecutar SQL puro
+with engine.connect() as conn:
+    # TRUNCATE es mucho más rápido que DELETE y respeta la estructura
+    print("Vaciando datos antiguos...")
+    conn.execute(text(f"TRUNCATE TABLE {nombre_tabla} RESTART IDENTITY;"))
+    conn.commit() # Confirmamos la acción
 
-print("¡Ingesta completada con éxito!.")
+# PASO 2: Llenamos con los datos nuevos
+# OJO: Cambiamos 'replace' por 'append' porque la tabla ya existe (vacía)
+df.to_sql(nombre_tabla, engine, if_exists='append', index=False)
+
+print("¡Ingesta completada con éxito! Las vistas se han actualizado automáticamente.")
